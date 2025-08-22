@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import HamburgerNav from './HamburgerNav';
 import ThreeScene from './ThreeScene';
+import WelcomeScreen from './WelcomeScreen';
 import HeroSection from './sections/HeroSection';
 import AboutSection from './sections/AboutSection';
 import SkillsSection from './sections/SkillsSection';
@@ -19,6 +20,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Portfolio = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
     // Create scroll progress tracker
@@ -34,35 +37,57 @@ const Portfolio = () => {
   }, []);
 
   useEffect(() => {
-    // GSAP ScrollTrigger animations for sections
+    if (!hasStarted) return;
+    
+    // Enhanced GSAP ScrollTrigger animations for treasure hunt discovery
     const sections = document.querySelectorAll('section');
     
     sections.forEach((section, index) => {
+      // Discovery animation - sections appear as if being "discovered"
       gsap.fromTo(
         section,
         {
-          opacity: 0.3,
-          y: 50,
+          opacity: 0,
+          y: 60,
+          scale: 0.95,
+          rotationX: 10
         },
         {
           opacity: 1,
           y: 0,
-          duration: 1,
-          ease: 'power2.out',
+          scale: 1,
+          rotationX: 0,
+          duration: 1.2,
+          ease: 'power3.out',
           scrollTrigger: {
             trigger: section,
-            start: 'top 80%',
-            end: 'bottom 20%',
+            start: 'top 85%',
+            end: 'bottom 15%',
             toggleActions: 'play none none reverse',
+            onEnter: () => {
+              // Add discovery pulse effect
+              gsap.to(section, {
+                boxShadow: '0 0 30px hsl(217 100% 60% / 0.4)',
+                duration: 0.5,
+                yoyo: true,
+                repeat: 1,
+              });
+            }
           },
         }
       );
+      
+      // Card hover animations for treasure discovery feel
+      const cards = section.querySelectorAll('.card-glow');
+      cards.forEach((card) => {
+        gsap.set(card, { transformOrigin: 'center center' });
+      });
     });
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, []);
+  }, [hasStarted]);
 
   const handleSectionClick = (sectionId: string) => {
     const section = document.getElementById(sectionId);
@@ -74,37 +99,62 @@ const Portfolio = () => {
     }
   };
 
+  const handleWelcomeStart = () => {
+    setShowWelcome(false);
+    setTimeout(() => {
+      setHasStarted(true);
+    }, 1200); // Wait for welcome screen exit animation
+  };
+
   return (
     <div className="relative min-h-screen bg-background overflow-x-hidden">
+      {/* Welcome Screen */}
+      <AnimatePresence>
+        {showWelcome && (
+          <WelcomeScreen onStart={handleWelcomeStart} />
+        )}
+      </AnimatePresence>
+
       {/* Three.js Background Scene */}
-      <ThreeScene scrollProgress={scrollProgress} />
+      {hasStarted && <ThreeScene scrollProgress={scrollProgress} />}
       
       {/* Navigation */}
-      <HamburgerNav onSectionClick={handleSectionClick} />
+      {hasStarted && <HamburgerNav onSectionClick={handleSectionClick} />}
       
-      {/* Scroll Progress Indicator */}
-      <motion.div
-        className="fixed top-0 left-0 h-1 bg-primary z-50 glow-subtle"
-        style={{ 
-          width: `${scrollProgress * 100}%`,
-          boxShadow: '0 0 10px hsl(var(--primary))'
-        }}
-      />
+      {/* Scroll Progress Indicator - Treasure Path Progress */}
+      {hasStarted && (
+        <motion.div
+          className="fixed top-0 left-0 h-1 z-50"
+          style={{ 
+            width: `${scrollProgress * 100}%`,
+            background: 'linear-gradient(90deg, hsl(var(--neon-blue)), hsl(var(--neon-blue-bright)))',
+            boxShadow: '0 0 10px hsl(var(--neon-blue)), 0 0 20px hsl(var(--neon-blue) / 0.5)'
+          }}
+        />
+      )}
 
       {/* Main Content */}
-      <main className="relative z-10">
-        <HeroSection />
-        <AboutSection />
-        <SkillsSection />
-        <ProjectsSection />
-        <ExperienceSection />
-        <CertificatesSection />
-        <LanguagesSection />
-        <ContactSection />
-      </main>
+      {hasStarted && (
+        <motion.main 
+          className="relative z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 0.8 }}
+        >
+          <HeroSection />
+          <AboutSection />
+          <SkillsSection />
+          <ProjectsSection />
+          <ExperienceSection />
+          <CertificatesSection />
+          <LanguagesSection />
+          <ContactSection />
+        </motion.main>
+      )}
 
-      {/* Floating Background Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-5">
+      {/* Enhanced Floating Background Elements */}
+      {hasStarted && (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden -z-5">
         {/* Animated Grid */}
         <motion.div
           className="absolute inset-0 opacity-10"
@@ -123,24 +173,29 @@ const Portfolio = () => {
           }}
         />
 
-        {/* Floating Particles */}
-        {[...Array(20)].map((_, i) => (
+        {/* Enhanced Floating Particles - Discovery Trail */}
+        {[...Array(25)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 bg-primary/20 rounded-full"
+            className="absolute rounded-full"
             style={{
+              width: Math.random() * 4 + 1 + 'px',
+              height: Math.random() * 4 + 1 + 'px',
+              background: i % 3 === 0 ? 'hsl(var(--neon-blue))' : 'hsl(var(--neon-blue) / 0.6)',
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
+              boxShadow: '0 0 10px hsl(var(--neon-blue) / 0.8)'
             }}
             animate={{
-              y: [0, -100, 0],
-              opacity: [0, 0.6, 0],
-              scale: [0, 1, 0]
+              y: [0, -120, 0],
+              x: [0, (Math.random() - 0.5) * 50, 0],
+              opacity: [0, 0.8, 0],
+              scale: [0, 1.2, 0]
             }}
             transition={{
-              duration: 5 + Math.random() * 5,
+              duration: 6 + Math.random() * 4,
               repeat: Infinity,
-              delay: Math.random() * 5,
+              delay: Math.random() * 6,
               ease: "easeInOut"
             }}
           />
@@ -183,7 +238,8 @@ const Portfolio = () => {
             delay: 2
           }}
         />
-      </div>
+        </div>
+      )}
     </div>
   );
 };

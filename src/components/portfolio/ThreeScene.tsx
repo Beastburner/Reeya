@@ -3,6 +3,113 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Line } from '@react-three/drei';
 import * as THREE from 'three';
 
+// Enhanced Treasure Orb Component
+const TreasureOrb = ({ position, scrollProgress, isActive }: { 
+  position: [number, number, number], 
+  scrollProgress: number,
+  isActive: boolean 
+}) => {
+  const orbRef = useRef<THREE.Group>(null);
+  const particlesRef = useRef<THREE.Points>(null);
+
+  useEffect(() => {
+    // Create particle burst for treasure found effect
+    if (isActive && particlesRef.current) {
+      const particleCount = 50;
+      const positions = new Float32Array(particleCount * 3);
+      
+      for (let i = 0; i < particleCount; i++) {
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.random() * Math.PI;
+        const radius = 1 + Math.random() * 2;
+        
+        positions[i * 3] = Math.sin(phi) * Math.cos(theta) * radius;
+        positions[i * 3 + 1] = Math.cos(phi) * radius;
+        positions[i * 3 + 2] = Math.sin(phi) * Math.sin(theta) * radius;
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      particlesRef.current.geometry = geometry;
+    }
+  }, [isActive]);
+
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+    
+    if (orbRef.current) {
+      // Treasure orb rotation and pulse
+      orbRef.current.rotation.y = time * 0.5;
+      
+      if (isActive) {
+        // Intense pulsing when treasure is found
+        const pulse = Math.sin(time * 4) * 0.3 + 1.2;
+        orbRef.current.scale.setScalar(pulse);
+      } else {
+        // Gentle pulse when approaching
+        const gentlePulse = Math.sin(time * 2) * 0.1 + 1;
+        orbRef.current.scale.setScalar(gentlePulse);
+      }
+    }
+    
+    // Animate treasure particles
+    if (particlesRef.current && isActive) {
+      particlesRef.current.rotation.y += 0.02;
+      const material = particlesRef.current.material as THREE.PointsMaterial;
+      material.size = 0.15 + Math.sin(time * 3) * 0.05;
+    }
+  });
+
+  return (
+    <group position={position}>
+      {/* Main Treasure Orb */}
+      <group ref={orbRef}>
+        {/* Core Orb */}
+        <mesh>
+          <sphereGeometry args={[0.7, 32, 32]} />
+          <meshBasicMaterial 
+            color="#3B82F6" 
+            transparent 
+            opacity={isActive ? 1 : 0.9}
+          />
+        </mesh>
+        
+        {/* Inner Glow */}
+        <mesh>
+          <sphereGeometry args={[1.0, 32, 32]} />
+          <meshBasicMaterial 
+            color="#3B82F6" 
+            transparent 
+            opacity={isActive ? 0.6 : 0.3}
+          />
+        </mesh>
+        
+        {/* Outer Glow */}
+        <mesh>
+          <sphereGeometry args={[1.5, 32, 32]} />
+          <meshBasicMaterial 
+            color="#3B82F6" 
+            transparent 
+            opacity={isActive ? 0.4 : 0.1}
+          />
+        </mesh>
+      </group>
+      
+      {/* Treasure Found Particle Burst */}
+      {isActive && (
+        <points ref={particlesRef}>
+          <pointsMaterial 
+            color="#3B82F6"
+            size={0.15}
+            transparent
+            opacity={0.8}
+          />
+        </points>
+      )}
+    </group>
+  );
+};
+
 interface PathPoint {
   x: number;
   y: number;
@@ -16,6 +123,7 @@ interface ThreeSceneProps {
 const TreasurePath = ({ scrollProgress }: { scrollProgress: number }) => {
   const lineRef = useRef<any>(null);
   const particlesRef = useRef<THREE.Points>(null);
+  const markersRef = useRef<THREE.Group[]>([]);
   const { camera } = useThree();
 
   // Define the treasure map path points
@@ -57,7 +165,9 @@ const TreasurePath = ({ scrollProgress }: { scrollProgress: number }) => {
     }
   }, []);
 
-  useFrame(() => {
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+    
     // Update camera position based on scroll
     const targetIndex = Math.floor(scrollProgress * (pathPoints.length - 1));
     const progress = (scrollProgress * (pathPoints.length - 1)) - targetIndex;
@@ -75,22 +185,54 @@ const TreasurePath = ({ scrollProgress }: { scrollProgress: number }) => {
       camera.lookAt(nextPoint.x, nextPoint.y, nextPoint.z);
     }
 
-    // Animate particles
+    // Animate particles along revealed path
     if (particlesRef.current) {
       particlesRef.current.rotation.y += 0.001;
+      
+      // Update particle opacity based on scroll progress
+      const material = particlesRef.current.material as THREE.PointsMaterial;
+      material.opacity = Math.min(0.6, scrollProgress * 2);
     }
+    
+    // Animate markers with pulse effect
+    markersRef.current.forEach((marker, index) => {
+      if (marker) {
+        const revealProgress = scrollProgress * pathPoints.length;
+        const isRevealed = revealProgress > index;
+        const isActive = Math.floor(revealProgress) === index;
+        
+        // Pulse effect for active marker
+        if (isActive) {
+          const pulse = Math.sin(time * 3) * 0.1 + 1;
+          marker.scale.setScalar(pulse);
+        } else {
+          marker.scale.setScalar(isRevealed ? 1 : 0.3);
+        }
+        
+        // Update opacity
+        marker.children.forEach(child => {
+          if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshBasicMaterial) {
+            child.material.opacity = isRevealed ? (isActive ? 1 : 0.8) : 0.2;
+          }
+        });
+      }
+    });
   });
 
   return (
     <>
-      {/* Main Path Line */}
+      {/* Progressive Path Line */}
       <Line
         ref={lineRef}
-        points={pathPoints.map(p => [p.x, p.y, p.z])}
+        points={pathPoints.map((p, index) => {
+          const revealProgress = scrollProgress * pathPoints.length;
+          const isRevealed = revealProgress > index;
+          return isRevealed ? [p.x, p.y, p.z] : [p.x, p.y, p.z];
+        })}
         color="#3B82F6"
         lineWidth={3}
         transparent
-        opacity={0.8}
+        opacity={Math.min(0.8, scrollProgress * 2)}
       />
       
       {/* Glowing Particles */}
@@ -103,48 +245,65 @@ const TreasurePath = ({ scrollProgress }: { scrollProgress: number }) => {
         />
       </points>
       
-      {/* Path Checkpoints */}
+      {/* Path Checkpoints - Treasure Markers */}
       {pathPoints.map((point, index) => (
-        <group key={index} position={[point.x, point.y, point.z]}>
+        <group 
+          key={index} 
+          position={[point.x, point.y, point.z]}
+          ref={(ref) => {
+            if (ref) markersRef.current[index] = ref;
+          }}
+        >
+          {/* Main Marker */}
           <mesh>
-            <sphereGeometry args={[0.2, 16, 16]} />
+            <sphereGeometry args={[0.3, 16, 16]} />
             <meshBasicMaterial 
               color="#3B82F6" 
               transparent 
-              opacity={0.8}
+              opacity={0.9}
             />
           </mesh>
-          {/* Glow effect */}
+          
+          {/* Outer Glow Ring */}
           <mesh>
-            <sphereGeometry args={[0.4, 16, 16]} />
+            <torusGeometry args={[0.5, 0.05, 8, 16]} />
             <meshBasicMaterial 
               color="#3B82F6" 
               transparent 
-              opacity={0.2}
+              opacity={0.4}
             />
           </mesh>
+          
+          {/* Inner Glow */}
+          <mesh>
+            <sphereGeometry args={[0.6, 16, 16]} />
+            <meshBasicMaterial 
+              color="#3B82F6" 
+              transparent 
+              opacity={0.1}
+            />
+          </mesh>
+          
+          {/* Floating Indicator */}
+          <group position={[0, 0.8, 0]}>
+            <mesh>
+              <coneGeometry args={[0.1, 0.3, 8]} />
+              <meshBasicMaterial 
+                color="#3B82F6" 
+                transparent 
+                opacity={0.7}
+              />
+            </mesh>
+          </group>
         </group>
       ))}
 
-      {/* Final Treasure Orb */}
-      <group position={[0, -10, -35]}>
-        <mesh>
-          <sphereGeometry args={[0.5, 32, 32]} />
-          <meshBasicMaterial 
-            color="#3B82F6" 
-            transparent 
-            opacity={0.9}
-          />
-        </mesh>
-        <mesh>
-          <sphereGeometry args={[0.8, 32, 32]} />
-          <meshBasicMaterial 
-            color="#3B82F6" 
-            transparent 
-            opacity={0.3}
-          />
-        </mesh>
-      </group>
+      {/* Final Treasure Orb - Enhanced */}
+      <TreasureOrb 
+        position={[0, -10, -35]} 
+        scrollProgress={scrollProgress}
+        isActive={scrollProgress > 0.9}
+      />
     </>
   );
 };
