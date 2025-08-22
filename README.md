@@ -1,6 +1,41 @@
-# Welcome to your Lovable project
+# Reeya Soni - Portfolio Website
 
-## Project info
+A modern, interactive portfolio website showcasing the professional journey of Reeya Soni, Computer Engineer.
+
+## Features
+
+🎯 **Interactive 3D Path Navigation** - Scroll-driven treasure map experience using Three.js  
+🌟 **Futuristic Design** - Black and white theme with glowing neon blue accents  
+📱 **Responsive Design** - Optimized for all devices  
+⚡ **Smooth Animations** - GSAP and Framer Motion powered interactions  
+🍔 **Hamburger Navigation** - Quick access to all sections  
+
+## Sections
+
+- **Hero** - Introduction with call-to-action buttons
+- **About** - Educational background and passion areas  
+- **Skills** - Technical expertise with interactive cards
+- **Projects** - Upcoming project showcases
+- **Experience** - Professional journey (coming soon)
+- **Certificates** - Professional certifications and achievements
+- **Languages** - Multilingual communication skills
+- **Contact** - Get in touch information
+
+## Tech Stack
+
+- **Frontend**: React, TypeScript, Tailwind CSS
+- **3D Graphics**: Three.js, React Three Fiber, React Three Drei
+- **Animations**: GSAP, Framer Motion
+- **UI Components**: Shadcn/ui
+- **Build Tool**: Vite
+
+## Contact
+
+📧 **Email**: reeyasoni4222@gmail.com  
+📞 **Phone**: +1 382-882-1771  
+📍 **Location**: 340 Crawford Ave, Windsor
+
+---
 
 **URL**: https://lovable.dev/projects/34b55fdf-e23f-4523-9908-02eff44bd159
 
