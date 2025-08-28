@@ -87,7 +87,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          {/* Search Icon */}
+          {/* Map Pin Icon */}
           <motion.div
             className="mb-8 flex justify-center"
             animate={{ 
@@ -100,7 +100,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
               ease: "easeInOut"
             }}
           >
-            <MapPin className="w-16 h-16 text-neon-blue glow-primary" />
+            <MapPin className="w-16 h-16 text-neon-blue drop-shadow-lg" style={{ filter: 'drop-shadow(0 0 20px hsl(var(--neon-blue) / 0.8))' }} />
           </motion.div>
 
           {/* Welcome Text */}
