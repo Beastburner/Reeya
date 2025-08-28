@@ -14,7 +14,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
       exit={{ 
         opacity: 0,
         scale: 1.1,
-        transition: { duration: 1.2, ease: "easeInOut" }
+        transition: { duration: 0.6, ease: "easeInOut" }
       }}
     >
       {/* Background Effects */}
@@ -26,7 +26,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
             backgroundPosition: ['0% 0%', '100% 100%'] 
           }}
           transition={{ 
-            duration: 30, 
+            duration: 15, 
             repeat: Infinity, 
             ease: 'linear' 
           }}
@@ -53,9 +53,9 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
               scale: [0.5, 1, 0.5]
             }}
             transition={{
-              duration: 4 + Math.random() * 3,
+              duration: 2 + Math.random() * 1.5,
               repeat: Infinity,
-              delay: Math.random() * 3,
+              delay: Math.random() * 1.5,
               ease: "easeInOut"
             }}
           />
@@ -73,7 +73,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
             opacity: [0.3, 0.6, 0.3],
           }}
           transition={{
-            duration: 3,
+            duration: 1.5,
             repeat: Infinity,
             ease: "easeInOut"
           }}
@@ -95,7 +95,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
               scale: [1, 1.1, 1]
             }}
             transition={{
-              duration: 2,
+              duration: 1,
               repeat: Infinity,
               ease: "easeInOut"
             }}
@@ -108,7 +108,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
             className="text-5xl md:text-6xl font-bold mb-6 text-gradient glow-text"
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
-            transition={{ duration: 1, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
             Ready to begin the treasure hunt?
           </motion.h1>
@@ -117,7 +117,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
             className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.3 }}
           >
             Follow the glowing path to discover Reeya's professional journey
           </motion.p>
@@ -126,7 +126,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
+            transition={{ delay: 0.4, duration: 0.3 }}
           >
             <Button 
               onClick={onStart}
@@ -155,7 +155,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
                   ]
                 }}
                 transition={{
-                  duration: 2,
+                  duration: 1,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
@@ -168,7 +168,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
             className="text-sm text-muted-foreground mt-6 opacity-70"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}
-            transition={{ delay: 1.2 }}
+            transition={{ delay: 0.6 }}
           >
             Interactive portfolio experience
           </motion.p>

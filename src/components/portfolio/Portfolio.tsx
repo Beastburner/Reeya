@@ -64,7 +64,7 @@ const Portfolio = () => {
           y: 0,
           scale: 1,
           rotationX: 0,
-          duration: 1.2,
+          duration: 0.8,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: section,
@@ -75,7 +75,7 @@ const Portfolio = () => {
               // Add discovery pulse effect
               gsap.to(section, {
                 boxShadow: '0 0 30px hsl(217 100% 60% / 0.4)',
-                duration: 0.5,
+                duration: 0.3,
                 yoyo: true,
                 repeat: 1,
               });
@@ -111,7 +111,7 @@ const Portfolio = () => {
     setShowWelcome(false);
     setTimeout(() => {
       setHasStarted(true);
-    }, 1200); // Wait for welcome screen exit animation
+    }, 600); // Wait for welcome screen exit animation
   };
 
   return (
@@ -147,7 +147,7 @@ const Portfolio = () => {
           className="relative z-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
+          transition={{ delay: 0.8, duration: 0.4 }}
         >
           <HeroSection />
           <AboutSection />
@@ -170,7 +170,7 @@ const Portfolio = () => {
             backgroundPosition: ['0% 0%', '100% 100%'] 
           }}
           transition={{ 
-            duration: 20, 
+            duration: 10, 
             repeat: Infinity, 
             ease: 'linear' 
           }}
@@ -201,7 +201,7 @@ const Portfolio = () => {
               scale: [0, 1, 0]
             }}
             transition={{
-              duration: 4 + Math.random() * 2,
+              duration: 2 + Math.random() * 1,
               repeat: Infinity,
               delay: Math.random() * 4,
               ease: "easeInOut"
@@ -222,7 +222,7 @@ const Portfolio = () => {
             scale: [1, 1.2, 1],
           }}
           transition={{
-            duration: 8,
+            duration: 4,
             repeat: Infinity,
             ease: "easeInOut"
           }}
@@ -240,7 +240,7 @@ const Portfolio = () => {
             scale: [1, 0.8, 1],
           }}
           transition={{
-            duration: 10,
+            duration: 5,
             repeat: Infinity,
             ease: "easeInOut",
             delay: 2
