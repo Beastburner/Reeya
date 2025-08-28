@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 interface WelcomeScreenProps {
   onStart: () => void;
@@ -100,7 +100,7 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
               ease: "easeInOut"
             }}
           >
-            <Search className="w-16 h-16 text-neon-blue glow-primary" />
+            <MapPin className="w-16 h-16 text-neon-blue glow-primary" />
           </motion.div>
 
           {/* Welcome Text */}

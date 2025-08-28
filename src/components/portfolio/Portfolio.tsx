@@ -101,7 +101,8 @@ const Portfolio = () => {
     if (section) {
       section.scrollIntoView({ 
         behavior: 'smooth',
-        block: 'start'
+        block: 'start',
+        inline: 'nearest'
       });
     }
   };

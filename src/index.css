@@ -78,6 +78,7 @@
     @apply bg-background text-foreground font-sans;
     font-family: 'Inter', system-ui, sans-serif;
     overflow-x: hidden;
+    scroll-behavior: smooth;
   }
   
   /* Custom scrollbar */
