@@ -41,8 +41,9 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
         {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-neon-blue/40 rounded-full"
+            className="absolute w-2 h-2 rounded-full"
             style={{
+              background: 'hsl(var(--neon-blue) / 0.4)',
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
             }}
