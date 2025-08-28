@@ -24,15 +24,22 @@ const Portfolio = () => {
   const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
-    // Create scroll progress tracker
+    // Optimized scroll progress tracker with throttling
+    let ticking = false;
     const handleScroll = () => {
-      const scrolled = window.scrollY;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = Math.min(scrolled / maxScroll, 1);
-      setScrollProgress(progress);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrolled = window.scrollY;
+          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          const progress = Math.min(scrolled / maxScroll, 1);
+          setScrollProgress(progress);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -173,8 +180,8 @@ const Portfolio = () => {
           }}
         />
 
-        {/* Enhanced Floating Particles - Discovery Trail */}
-        {[...Array(25)].map((_, i) => (
+        {/* Optimized Floating Particles - Reduced count */}
+        {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full"
@@ -184,18 +191,18 @@ const Portfolio = () => {
               background: i % 3 === 0 ? 'hsl(var(--neon-blue))' : 'hsl(var(--neon-blue) / 0.6)',
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              boxShadow: '0 0 10px hsl(var(--neon-blue) / 0.8)'
+              boxShadow: '0 0 10px hsl(var(--neon-blue) / 0.8)',
+              willChange: 'transform, opacity'
             }}
             animate={{
-              y: [0, -120, 0],
-              x: [0, (Math.random() - 0.5) * 50, 0],
-              opacity: [0, 0.8, 0],
-              scale: [0, 1.2, 0]
+              y: [0, -80, 0],
+              opacity: [0, 0.6, 0],
+              scale: [0, 1, 0]
             }}
             transition={{
-              duration: 6 + Math.random() * 4,
+              duration: 4 + Math.random() * 2,
               repeat: Infinity,
-              delay: Math.random() * 6,
+              delay: Math.random() * 4,
               ease: "easeInOut"
             }}
           />

@@ -146,8 +146,8 @@ const TreasurePath = ({ scrollProgress }: { scrollProgress: number }) => {
     
     const points = curve.getPoints(200);
 
-    // Create particles along the path
-    const particleCount = 100;
+    // Optimized particles along the path
+    const particleCount = 50;
     const positions = new Float32Array(particleCount * 3);
     
     for (let i = 0; i < particleCount; i++) {
@@ -168,51 +168,51 @@ const TreasurePath = ({ scrollProgress }: { scrollProgress: number }) => {
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
     
-    // Update camera position based on scroll
-    const targetIndex = Math.floor(scrollProgress * (pathPoints.length - 1));
-    const progress = (scrollProgress * (pathPoints.length - 1)) - targetIndex;
-    
-    if (targetIndex < pathPoints.length - 1) {
-      const currentPoint = pathPoints[targetIndex];
-      const nextPoint = pathPoints[targetIndex + 1];
+    // Optimized camera updates - less frequent updates
+    if (Math.floor(time * 30) !== Math.floor((time - 0.033) * 30)) {
+      const targetIndex = Math.floor(scrollProgress * (pathPoints.length - 1));
+      const progress = (scrollProgress * (pathPoints.length - 1)) - targetIndex;
       
-      // Interpolate camera position
-      camera.position.x = THREE.MathUtils.lerp(currentPoint.x, nextPoint.x, progress);
-      camera.position.y = THREE.MathUtils.lerp(currentPoint.y + 3, nextPoint.y + 3, progress);
-      camera.position.z = THREE.MathUtils.lerp(currentPoint.z + 5, nextPoint.z + 5, progress);
-      
-      // Look at the next point on the path
-      camera.lookAt(nextPoint.x, nextPoint.y, nextPoint.z);
+      if (targetIndex < pathPoints.length - 1) {
+        const currentPoint = pathPoints[targetIndex];
+        const nextPoint = pathPoints[targetIndex + 1];
+        
+        // Smoother camera interpolation
+        camera.position.x = THREE.MathUtils.lerp(camera.position.x, 
+          THREE.MathUtils.lerp(currentPoint.x, nextPoint.x, progress), 0.1);
+        camera.position.y = THREE.MathUtils.lerp(camera.position.y,
+          THREE.MathUtils.lerp(currentPoint.y + 3, nextPoint.y + 3, progress), 0.1);
+        camera.position.z = THREE.MathUtils.lerp(camera.position.z,
+          THREE.MathUtils.lerp(currentPoint.z + 5, nextPoint.z + 5, progress), 0.1);
+        
+        camera.lookAt(nextPoint.x, nextPoint.y, nextPoint.z);
+      }
     }
 
-    // Animate particles along revealed path
-    if (particlesRef.current) {
-      particlesRef.current.rotation.y += 0.001;
-      
-      // Update particle opacity based on scroll progress
+    // Reduced particle animation frequency
+    if (particlesRef.current && Math.floor(time * 10) % 2 === 0) {
+      particlesRef.current.rotation.y += 0.002;
       const material = particlesRef.current.material as THREE.PointsMaterial;
-      material.opacity = Math.min(0.6, scrollProgress * 2);
+      material.opacity = Math.min(0.4, scrollProgress * 1.5);
     }
     
-    // Animate markers with pulse effect
+    // Optimized marker animations
+    const revealProgress = scrollProgress * pathPoints.length;
     markersRef.current.forEach((marker, index) => {
-      if (marker) {
-        const revealProgress = scrollProgress * pathPoints.length;
+      if (marker && Math.floor(time * 20) % 3 === 0) {
         const isRevealed = revealProgress > index;
         const isActive = Math.floor(revealProgress) === index;
         
-        // Pulse effect for active marker
-        if (isActive) {
-          const pulse = Math.sin(time * 3) * 0.1 + 1;
-          marker.scale.setScalar(pulse);
-        } else {
-          marker.scale.setScalar(isRevealed ? 1 : 0.3);
-        }
+        const targetScale = isActive ? Math.sin(time * 2) * 0.1 + 1.1 : (isRevealed ? 1 : 0.3);
+        marker.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
         
-        // Update opacity
         marker.children.forEach(child => {
           if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshBasicMaterial) {
-            child.material.opacity = isRevealed ? (isActive ? 1 : 0.8) : 0.2;
+            child.material.opacity = THREE.MathUtils.lerp(
+              child.material.opacity, 
+              isRevealed ? (isActive ? 1 : 0.6) : 0.2, 
+              0.1
+            );
           }
         });
       }

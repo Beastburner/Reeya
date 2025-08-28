@@ -37,8 +37,8 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
           }}
         />
 
-        {/* Floating Particles */}
-        {[...Array(15)].map((_, i) => (
+        {/* Optimized Floating Particles */}
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-2 h-2 rounded-full"
