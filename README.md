@@ -43,11 +43,7 @@ A modern, interactive portfolio website showcasing the professional journey of R
 
 There are several ways of editing your application.
 
-**Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/34b55fdf-e23f-4523-9908-02eff44bd159) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
